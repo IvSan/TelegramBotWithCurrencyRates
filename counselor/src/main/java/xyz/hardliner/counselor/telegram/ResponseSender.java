@@ -2,11 +2,11 @@ package xyz.hardliner.counselor.telegram;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
-import xyz.hardliner.counselor.app.Bot;
 import xyz.hardliner.counselor.domain.Interrogator;
 
 import java.util.ArrayList;
@@ -33,11 +33,18 @@ public class ResponseSender {
 		}
 	}
 
-	public void sendText(List<String> strings, Interrogator interrogator) {
+	public void sendText(Interrogator interrogator, List<String> strings) {
 		List<BotApiMethod> messages = new ArrayList<>();
 		for (String string : strings) {
 			messages.add((new SendMessage()).setText(string).setChatId(interrogator.getChatId()));
 		}
 		this.executeCommands(messages);
+	}
+
+	public void sendText(Pair<Interrogator, List<String>> pair) {
+		if (pair == null) {
+			return;
+		}
+		sendText(pair.getLeft(), pair.getRight());
 	}
 }

@@ -24,7 +24,7 @@ public class Navigator {
 
 	public List<String> goTo(@NonNull String command) {
 		for (Direction direction : current.getDirections()) {
-			if (command.equals(direction.getCommandAndLegendToGo().getLeft())) {
+			if (command.equalsIgnoreCase(direction.getCommandAndLegendToGo().getLeft())) {
 				List<String> messages = new ArrayList<>();
 				nullsafeAdd(messages, direction.getLeavingLegend());
 				current = direction.getTo();

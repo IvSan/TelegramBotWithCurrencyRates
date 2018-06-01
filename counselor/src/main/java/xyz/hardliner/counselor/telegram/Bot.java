@@ -1,4 +1,4 @@
-package xyz.hardliner.counselor.app;
+package xyz.hardliner.counselor.telegram;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -8,7 +8,7 @@ import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
-import xyz.hardliner.counselor.telegram.ChatMaster;
+import xyz.hardliner.counselor.app.Module;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -16,6 +16,7 @@ public class Bot extends TelegramLongPollingBot implements Module {
 
 	private final Environment environment;
 	private final ChatMaster chatMaster;
+	private final ResponseSender responseSender;
 
 	@Override
 	@SneakyThrows(TelegramApiRequestException.class)
@@ -47,6 +48,6 @@ public class Bot extends TelegramLongPollingBot implements Module {
 
 	@Override
 	public void onUpdateReceived(Update update) {
-		chatMaster.handleUpdate(update);
+		responseSender.sendText(chatMaster.handleUpdate(update));
 	}
 }

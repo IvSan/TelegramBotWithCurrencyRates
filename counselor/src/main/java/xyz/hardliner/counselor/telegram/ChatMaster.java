@@ -1,8 +1,9 @@
 package xyz.hardliner.counselor.telegram;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.User;
@@ -19,19 +20,19 @@ import java.util.List;
 public class ChatMaster {
 
 	private final UserCache userCache;
-	@Getter
-	private final ResponseSender responseSender;
 
-	public void handleUpdate(Update update) {
+	public Pair<Interrogator, List<String>> handleUpdate(Update update) {
 		if (!isValid(update)) {
-			return;
+			return null;
 		}
 		try {
 			Instant start = Instant.now();
-			process(update);
+			Pair<Interrogator, List<String>> result = process(update);
 			log.debug("Respond on update done in " + Duration.between(start, Instant.now()).toMillis() + "ms");
+			return result;
 		} catch (Exception ex) {
 			log.error("Failed processing message. \nUpdate: {} \nException: {}", update.toString(), ex);
+			return null;
 		}
 	}
 
@@ -46,11 +47,11 @@ public class ChatMaster {
 		return true;
 	}
 
-	private void process(Update update) {
+	private Pair<Interrogator, List<String>> process(Update update) {
 		log.info("Update received: " + update.getMessage().getText());
 		Interrogator user = userCache.recognizeInterrogator(update.getMessage());
 		List<String> reaction = user.getNavigator().goTo(update.getMessage().getText());
 		reaction.addAll(user.getNavigator().getLegendsToGo());
-		responseSender.sendText(reaction, user);
+		return new ImmutablePair<>(user, reaction);
 	}
 }
