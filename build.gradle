@@ -1,0 +1,14 @@
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'application'
+
+    group = 'xyz.hardliner'
+    version = '0.1'
+    sourceCompatibility = 1.8
+
+    mainClassName = "xyz.hardliner.counselor.app.App"
+}
+
+subprojects {
+
+} 

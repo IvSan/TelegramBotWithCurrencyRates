@@ -1,0 +1,15 @@
+apply plugin: 'java'
+
+group = 'xyz.hardliner'
+version = '0.1'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.16.22'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+}
+ 
