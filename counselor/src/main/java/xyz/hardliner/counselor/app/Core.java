@@ -18,12 +18,11 @@ import java.util.concurrent.TimeUnit;
 public class Core {
 
 	private final Bot bot;
-	private List<Module> modules;
-	private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+	private final List<Module> modules = new ArrayList<>();
+	private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
 	@PostConstruct
 	public void initCore() {
-		modules = new ArrayList<>();
 		constructBot();
 		executor.scheduleAtFixedRate(tryToFix(), 60, 60, TimeUnit.SECONDS);
 	}
