@@ -4,7 +4,6 @@ import lombok.Data;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 import org.telegram.telegrambots.api.objects.User;
-import xyz.hardliner.counselor.domain.service.MenuConstructor;
 import xyz.hardliner.decider.Navigator;
 
 @Data
@@ -19,13 +18,12 @@ public class Interrogator {
 
 	private Navigator navigator;
 
-	public Interrogator(User user, Long chatId) {
+	public Interrogator(User user, Long chatId, Navigator navigator) {
 		this.id = user.getId();
 		this.firstName = user.getFirstName();
 		this.lastName = user.getLastName();
 		this.userName = user.getUserName();
 		this.chatId = chatId;
-
-		this.navigator = MenuConstructor.construct();
+		this.navigator = navigator;
 	}
 }

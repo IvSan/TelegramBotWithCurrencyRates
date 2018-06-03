@@ -6,6 +6,7 @@ import lombok.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Getter
@@ -31,7 +32,7 @@ public class Navigator {
 				nullsafeAdd(messages, direction.getIncomingLegend());
 
 				if (direction.getAutomaticCommand() != null) {
-					messages.addAll(goTo(direction.getAutomaticCommand()));
+					messages.addAll(goTo(direction.getAutomaticCommand().get()));
 				}
 				return messages;
 			}
@@ -41,9 +42,12 @@ public class Navigator {
 		return result;
 	}
 
-	private void nullsafeAdd(List<String> list, String string) {
-		if (string != null) {
-			list.add(string);
+	private void nullsafeAdd(List<String> list, Supplier<String> supplier) {
+		if (supplier != null) {
+			String string = supplier.get();
+			if (string != null) {
+				list.add(string);
+			}
 		}
 	}
 }

@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.function.Supplier;
+
 @Getter
 @Setter
 @RequiredArgsConstructor
@@ -14,8 +16,8 @@ public class Direction {
 	private final Node to;
 
 	private Pair<String, String> commandAndLegendToGo;
-	private String leavingLegend;
-	private String incomingLegend;
-	private String automaticCommand;
+	private Supplier<String> leavingLegend;
+	private Supplier<String> incomingLegend;
+	private Supplier<String> automaticCommand;
 
 }
