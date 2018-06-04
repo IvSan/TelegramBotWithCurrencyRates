@@ -1,51 +1,44 @@
 package xyz.hardliner.counselor.datacollector;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import xyz.hardliner.counselor.datacollector.datasources.Bitfinex;
+import xyz.hardliner.counselor.datacollector.datasources.DataSource;
+import xyz.hardliner.counselor.datacollector.datasources.FixerIo;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Service
-@RequiredArgsConstructor
 public class CurrencyDataHandler {
 
-	private static final String FIXER = "http://data.fixer.io/api/";
-	private static final String LATEST = "latest";
-	private static final String PROPS = "&symbols=USD,RUB,BTC&format=1";
-	private final Environment environment;
-	private final ObjectMapper mapper = new ObjectMapper();
 	private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-
+	private final List<DataSource> dataSources;
 	private CurrencyData actualData;
+
+	public CurrencyDataHandler(FixerIo fixerIo, Bitfinex bitfinex) {
+		this.dataSources = new ArrayList<>();
+		dataSources.add(fixerIo);
+		dataSources.add(bitfinex);
+	}
 
 	@PostConstruct
 	private void init() {
+		actualData = new CurrencyData();
 		executor.scheduleAtFixedRate(this::updateData, 0, 20, TimeUnit.MINUTES);
 	}
 
-	@SneakyThrows({IOException.class})
 	private CurrencyData updateData() {
-		FixerIoJsonUnit unit = mapper.readValue(compileUrl(), FixerIoJsonUnit.class);
-		this.actualData = new CurrencyData(unit);
+		for (DataSource dataSource : dataSources) {
+			dataSource.updateData(actualData);
+		}
 		return actualData;
 	}
 
-	@SneakyThrows({MalformedURLException.class})
-	private URL compileUrl() {
-		String str = FIXER + LATEST + "?access_key=" + environment.getRequiredProperty("fixer.io.key") + PROPS;
-		return new URL(str);
-	}
-
-	public String getData(){
+	public String getData() {
 		return actualData.compileString();
 	}
 

@@ -1,30 +1,28 @@
 package xyz.hardliner.counselor.datacollector;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.util.Locale;
 
-@Data
+@Getter
+@Setter
 public class CurrencyData {
 
 	Float usdToRub;
 	Float uerToRub;
-	Float btcToRub;
 	Float btcToUsd;
 
-	LocalDateTime created;
+	LocalDateTime updated;
 
-	public CurrencyData(FixerIoJsonUnit data) {
-		Float floatRub = 1f;
-		this.uerToRub = (data.getRates().get("RUB")) / floatRub;
-		this.usdToRub = uerToRub / (data.getRates().get("USD"));
-		this.btcToRub = uerToRub / (data.getRates().get("BTC"));
-		this.btcToUsd = data.getRates().get("USD") / data.getRates().get("BTC");
-
-		created = LocalDateTime.now();
+	public CurrencyData() {
+		usdToRub = Float.MIN_NORMAL;
+		uerToRub = Float.MIN_NORMAL;
+		btcToUsd = Float.MIN_NORMAL;
+		updated = LocalDateTime.now();
 	}
 
 	public String compileString() {
@@ -32,7 +30,7 @@ public class CurrencyData {
 		builder.append("1 USD = ").append(twoDigitsFormat(usdToRub)).append(" RUB\n");
 		builder.append("1 EUR = ").append(twoDigitsFormat(uerToRub)).append(" RUB\n\n");
 		builder.append("1 BTC = ").append(twoDigitsFormat(btcToUsd)).append(" USD\n");
-		builder.append("1 BTC = ").append(twoDigitsFormat(btcToRub)).append(" RUB\n");
+		builder.append("1 BTC = ").append(twoDigitsFormat(btcToUsd * usdToRub)).append(" RUB\n");
 		return builder.toString();
 	}
 

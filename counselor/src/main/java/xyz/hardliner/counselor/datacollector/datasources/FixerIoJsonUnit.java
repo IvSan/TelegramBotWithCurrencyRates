@@ -1,4 +1,4 @@
-package xyz.hardliner.counselor.datacollector;
+package xyz.hardliner.counselor.datacollector.datasources;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import lombok.Data;
