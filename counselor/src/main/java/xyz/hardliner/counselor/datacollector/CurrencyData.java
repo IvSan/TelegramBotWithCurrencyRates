@@ -2,6 +2,7 @@ package xyz.hardliner.counselor.datacollector;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.RoundingMode;
 import java.text.NumberFormat;
@@ -10,6 +11,7 @@ import java.util.Locale;
 
 @Getter
 @Setter
+@ToString
 public class CurrencyData {
 
 	Float usdToRub;

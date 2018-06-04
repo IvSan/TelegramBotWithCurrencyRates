@@ -1,9 +1,10 @@
 package xyz.hardliner.counselor.datacollector;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import xyz.hardliner.counselor.datacollector.datasources.Bitfinex;
 import xyz.hardliner.counselor.datacollector.datasources.DataSource;
-import xyz.hardliner.counselor.datacollector.datasources.FixerIo;
+import xyz.hardliner.counselor.datacollector.datasources.ExchangeRates;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 public class CurrencyDataHandler {
 
@@ -19,10 +21,10 @@ public class CurrencyDataHandler {
 	private final List<DataSource> dataSources;
 	private CurrencyData actualData;
 
-	public CurrencyDataHandler(FixerIo fixerIo, Bitfinex bitfinex) {
+	public CurrencyDataHandler() {
 		this.dataSources = new ArrayList<>();
-		dataSources.add(fixerIo);
-		dataSources.add(bitfinex);
+		dataSources.add(new ExchangeRates());
+		dataSources.add(new Bitfinex());
 	}
 
 	@PostConstruct
@@ -35,6 +37,7 @@ public class CurrencyDataHandler {
 		for (DataSource dataSource : dataSources) {
 			dataSource.updateData(actualData);
 		}
+		log.info("Rates update done.");
 		return actualData;
 	}
 

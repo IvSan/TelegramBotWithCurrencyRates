@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Data
-public class FixerIoJsonUnit {
+public class ExchangeRatesApiUnit {
 	private String base;
 	private String date;
 	private Map<String, Float> rates = new HashMap<>();

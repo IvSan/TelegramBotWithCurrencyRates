@@ -2,28 +2,25 @@ package xyz.hardliner.counselor.datacollector.datasources;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import xyz.hardliner.counselor.datacollector.CurrencyData;
 
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Slf4j
-public class Bitfinex implements DataSource {
+public class ExchangeRates implements DataSource {
 
-	private static final String BITFINEX = "https://api.bitfinex.com/v2/tickers?symbols=tBTCUSD";
+	private static final String URL = "https://exchangeratesapi.io/api/latest?base=USD&symbols=RUB,EUR";
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Override
 	public CurrencyData updateData(CurrencyData data) {
 		try {
-			// I know next two lines looks weird, but that's optimum way.
-			List<List<Object>> unit = mapper.readValue(new URL(BITFINEX), List.class);
-			Float btcRate = ((Double) unit.get(0).get(1)).floatValue();
-			data.setBtcToUsd(btcRate);
+			ExchangeRatesApiUnit unit = mapper.readValue(new URL(URL), ExchangeRatesApiUnit.class);
+			data.setUsdToRub(unit.getRates().get("RUB"));
+			data.setUerToRub(data.getUsdToRub() / unit.getRates().get("EUR"));
 			data.setUpdated(LocalDateTime.now());
-			log.info("Bitfinex data successfully updated: " + data.toString());
+			log.info("FixerIo data successfully updated: " + data.toString());
 			return data;
 		} catch (Exception ex) {
 			log.error("Cannot update bitfinex info! " + ex.getMessage(), ex);
