@@ -6,6 +6,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
+import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import xyz.hardliner.counselor.domain.Interrogator;
 
@@ -33,18 +35,20 @@ public class ResponseSender {
 		}
 	}
 
-	public void sendText(Interrogator interrogator, List<String> strings) {
+	public void sendText(Interrogator interrogator, List<String> strings, ReplyKeyboardMarkup keyboard) {
 		List<BotApiMethod> messages = new ArrayList<>();
 		for (String string : strings) {
-			messages.add((new SendMessage()).setText(string).setChatId(interrogator.getChatId()));
+			SendMessage message = (new SendMessage()).setText(string).setChatId(interrogator.getChatId());
+			message.setReplyMarkup(keyboard != null ? keyboard : new ReplyKeyboardRemove());
+			messages.add(message);
 		}
 		this.executeCommands(messages);
 	}
 
-	public void sendText(Pair<Interrogator, List<String>> pair) {
+	public void sendText(Pair<Interrogator, Response> pair) {
 		if (pair == null) {
 			return;
 		}
-		sendText(pair.getLeft(), pair.getRight());
+		sendText(pair.getLeft(), pair.getRight().getMessages(), pair.getRight().getKeyboard());
 	}
 }

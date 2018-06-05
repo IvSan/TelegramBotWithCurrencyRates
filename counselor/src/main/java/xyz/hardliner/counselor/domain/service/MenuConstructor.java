@@ -1,45 +1,44 @@
 package xyz.hardliner.counselor.domain.service;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
 import xyz.hardliner.counselor.datacollector.CurrencyDataHandler;
-import xyz.hardliner.decider.Direction;
-import xyz.hardliner.decider.Navigator;
-import xyz.hardliner.decider.Node;
+import xyz.hardliner.counselor.telegram.TelegramDirection;
+import xyz.hardliner.counselor.telegram.TelegramNavigator;
+import xyz.hardliner.counselor.telegram.TelegramNode;
+
+import java.util.Collections;
 
 public class MenuConstructor {
 
-	public static Navigator construct(CurrencyDataHandler dataHandler) {
-		Node vil = new Node();
-		Node fors = new Node();
-		Node town = new Node();
+	public static TelegramNavigator construct(CurrencyDataHandler dataHandler) {
+		TelegramNode main = new TelegramNode();
+		TelegramNode rates = new TelegramNode();
 
-		Direction villageToForest = new Direction(vil, fors);
-		villageToForest.setCommandAndLegendToGo(new ImmutablePair<>("forest", "able to go forest"));
-		villageToForest.setLeavingLegend(() -> "leaving village");
-		villageToForest.setIncomingLegend(() -> "welcome to forest");
-		vil.addDirection(villageToForest);
+		TelegramDirection getRatesFromMain = new TelegramDirection(main, rates);
+		getRatesFromMain.setCommandAndLegendToGo(new ImmutablePair<>("rates", null));
+		getRatesFromMain.setIncomingLegend(dataHandler::getData);
+		getRatesFromMain.setAutomaticCommand(() -> "main");
+		main.addDirection(getRatesFromMain);
 
-		Direction forestToVillage = new Direction(fors, vil);
-		forestToVillage.setCommandAndLegendToGo(new ImmutablePair<>("village", "you can go village"));
-		forestToVillage.setLeavingLegend(() -> "leaving forest");
-		forestToVillage.setIncomingLegend(() -> "welcome to village");
-		fors.addDirection(forestToVillage);
+		TelegramDirection autoReturnFromRatesToMain = new TelegramDirection(rates, main);
+		autoReturnFromRatesToMain.setCommandAndLegendToGo(new ImmutablePair<>("main", null));
+		rates.addDirection(autoReturnFromRatesToMain);
 
-		Direction villageToTown = new Direction(vil, town);
-		villageToTown.setCommandAndLegendToGo(new ImmutablePair<>("town", "you can go to town"));
-		villageToTown.setLeavingLegend(() -> "escaping village");
-//		villageToTown.setIncomingLegend(() -> "guard force you to go back");
-		villageToTown.setIncomingLegend(() -> dataHandler.getData());
-		villageToTown.setAutomaticCommand(() -> "village");
-		vil.addDirection(villageToTown);
+		main.setIncomingKeyboard(() -> oneButtonKeyboard("Rates"));
 
-		Direction townToVillage = new Direction(town, vil);
-		townToVillage.setCommandAndLegendToGo(new ImmutablePair<>("village", null));
-		townToVillage.setIncomingLegend(() -> "You sadly returned to village");
-		town.addDirection(townToVillage);
-
-		Navigator navigator = new Navigator(vil);
-		return navigator;
+		return new TelegramNavigator(main);
 	}
+
+	private static ReplyKeyboardMarkup oneButtonKeyboard(String label) {
+		ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup().setResizeKeyboard(true);
+		KeyboardRow row = new KeyboardRow();
+		row.add(new KeyboardButton().setText(label));
+		keyboardMarkup.setKeyboard(Collections.singletonList(row));
+		return keyboardMarkup;
+	}
+
 
 }

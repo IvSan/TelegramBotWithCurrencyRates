@@ -1,22 +1,18 @@
-package xyz.hardliner.decider;
+package xyz.hardliner.counselor.telegram;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import xyz.hardliner.decider.Navigator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-@Getter
-@NoArgsConstructor
-public class Navigator {
+public class TelegramNavigator extends Navigator {
 
-	private Node current;
+	private TelegramNode current;
 
-	public Navigator(Node current) {
+	public TelegramNavigator(TelegramNode current) {
 		this.current = current;
 	}
 
@@ -25,8 +21,8 @@ public class Navigator {
 				.filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
-	public List<String> goTo(@NonNull String command) {
-		for (Direction direction : current.getDirections()) {
+	public Response moveTo(@NonNull String command) {
+		for (TelegramDirection direction : current.getTelegramDirections()) {
 			if (command.equalsIgnoreCase(direction.getCommandAndLegendToGo().getLeft())) {
 				List<String> messages = new ArrayList<>();
 				nullsafeAdd(messages, direction.getLeavingLegend());
@@ -34,26 +30,19 @@ public class Navigator {
 				nullsafeAdd(messages, direction.getIncomingLegend());
 
 				if (direction.getAutomaticCommand() != null) {
-					messages.addAll(goTo(direction.getAutomaticCommand().get()));
+					messages.addAll(moveTo(direction.getAutomaticCommand().get()).getMessages());
 				}
 
 				for (String legend : getLegendsToGo()) {
 					nullsafeAdd(messages, () -> legend);
 				}
-				return messages;
+
+				return new Response(messages, current.getIncomingKeyboard().get());
 			}
 		}
 		ArrayList<String> result = new ArrayList<>();
 		result.add(current.invalidCommand());
-		return result;
+		return new Response(result);
 	}
 
-	public void nullsafeAdd(List<String> list, Supplier<String> supplier) {
-		if (supplier != null) {
-			String string = supplier.get();
-			if (string != null) {
-				list.add(string);
-			}
-		}
-	}
 }
