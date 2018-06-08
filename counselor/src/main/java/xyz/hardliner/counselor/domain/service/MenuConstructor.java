@@ -4,7 +4,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
-import xyz.hardliner.counselor.datacollector.CurrencyDataHandler;
 import xyz.hardliner.counselor.telegram.TelegramDirection;
 import xyz.hardliner.counselor.telegram.TelegramNavigator;
 import xyz.hardliner.counselor.telegram.TelegramNode;
@@ -13,13 +12,13 @@ import java.util.Collections;
 
 public class MenuConstructor {
 
-	public static TelegramNavigator construct(CurrencyDataHandler dataHandler) {
+	public static TelegramNavigator construct(ServiceFacade services) {
 		TelegramNode main = new TelegramNode();
 		TelegramNode rates = new TelegramNode();
 
 		TelegramDirection getRatesFromMain = new TelegramDirection(main, rates);
 		getRatesFromMain.setCommandAndLegendToGo(new ImmutablePair<>("rates", null));
-		getRatesFromMain.setIncomingLegend(dataHandler::getData);
+		getRatesFromMain.setIncomingLegend(services::getCurrencyData);
 		getRatesFromMain.setAutomaticCommand(() -> "main");
 		main.addDirection(getRatesFromMain);
 

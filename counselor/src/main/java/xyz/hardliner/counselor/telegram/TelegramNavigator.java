@@ -42,7 +42,7 @@ public class TelegramNavigator extends Navigator {
 		}
 		ArrayList<String> result = new ArrayList<>();
 		result.add(current.invalidCommand());
-		return new Response(result);
+		return new Response(result, current.getIncomingKeyboard().get());
 	}
 
 }

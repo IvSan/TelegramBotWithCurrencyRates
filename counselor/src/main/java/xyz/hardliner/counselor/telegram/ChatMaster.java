@@ -47,7 +47,7 @@ public class ChatMaster {
 	}
 
 	private Pair<Interrogator, Response> process(Update update) {
-		log.info("Update received: " + update.getMessage().getText());
+		log.info("Update received: '" + update.getMessage().getText() + "' from " + update.getMessage().getFrom());
 		Interrogator user = userCache.recognizeInterrogator(update.getMessage());
 		String str = update.getMessage().getText();
 		return new ImmutablePair<>(user, user.getNavigator().moveTo(str));
