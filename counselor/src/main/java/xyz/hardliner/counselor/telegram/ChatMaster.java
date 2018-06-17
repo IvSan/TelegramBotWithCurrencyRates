@@ -13,6 +13,8 @@ import xyz.hardliner.counselor.domain.service.UserCache;
 import java.time.Duration;
 import java.time.Instant;
 
+import static xyz.hardliner.counselor.util.Utils.parseIdentities;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -38,8 +40,7 @@ public class ChatMaster {
 	private boolean isValid(Update update) {
 		if (!update.hasMessage() || !update.getMessage().hasText()) {
 			User user = update.getMessage().getFrom();
-			log.error("Invalid update received from user {}{}.",
-					user.getFirstName(), user.getLastName() != null ? " " + user.getLastName() : "");
+			log.error("Invalid update received from user {}: {}", parseIdentities(user), update.toString());
 			return false;
 		}
 		log.debug("New update received: " + update.toString());
@@ -47,7 +48,8 @@ public class ChatMaster {
 	}
 
 	private Pair<Interrogator, Response> process(Update update) {
-		log.info("Update received: '" + update.getMessage().getText() + "' from " + update.getMessage().getFrom());
+		log.info("Update received: '" + update.getMessage().getText() + "' from "
+				+ parseIdentities(update.getMessage().getFrom()));
 		Interrogator user = userCache.recognizeInterrogator(update.getMessage());
 		String str = update.getMessage().getText();
 		return new ImmutablePair<>(user, user.getNavigator().moveTo(str));

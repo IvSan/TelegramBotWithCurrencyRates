@@ -20,7 +20,6 @@ public class ExchangeRates implements DataSource {
 			data.setUsdToRub(unit.getRates().get("RUB"));
 			data.setUerToRub(data.getUsdToRub() / unit.getRates().get("EUR"));
 			data.setUpdated(LocalDateTime.now());
-			log.info("FixerIo data successfully updated: " + data.toString());
 			return data;
 		} catch (Exception ex) {
 			log.error("Cannot update bitfinex info! " + ex.getMessage(), ex);

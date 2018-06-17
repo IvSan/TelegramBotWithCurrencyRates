@@ -12,6 +12,9 @@ import java.util.Collections;
 
 public class MenuConstructor {
 
+	private MenuConstructor() {
+	}
+
 	public static TelegramNavigator construct(ServiceFacade services) {
 		TelegramNode main = new TelegramNode();
 		TelegramNode rates = new TelegramNode();
@@ -21,6 +24,12 @@ public class MenuConstructor {
 		getRatesFromMain.setIncomingLegend(services::getCurrencyData);
 		getRatesFromMain.setAutomaticCommand(() -> "main");
 		main.addDirection(getRatesFromMain);
+
+		TelegramDirection getRatesFromStartCommand = new TelegramDirection(main, rates);
+		getRatesFromStartCommand.setCommandAndLegendToGo(new ImmutablePair<>("/start", null));
+		getRatesFromStartCommand.setIncomingLegend(services::getCurrencyData);
+		getRatesFromStartCommand.setAutomaticCommand(() -> "main");
+		main.addDirection(getRatesFromStartCommand);
 
 		TelegramDirection autoReturnFromRatesToMain = new TelegramDirection(rates, main);
 		autoReturnFromRatesToMain.setCommandAndLegendToGo(new ImmutablePair<>("main", null));

@@ -16,6 +16,7 @@ import java.util.List;
 
 @Slf4j
 @Service
+@SuppressWarnings("WeakerAccess")
 public class ResponseSender {
 
 	@Setter

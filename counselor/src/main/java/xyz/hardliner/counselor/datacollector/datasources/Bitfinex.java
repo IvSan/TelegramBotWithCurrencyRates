@@ -30,7 +30,6 @@ public class Bitfinex implements DataSource {
 			}
 			data.setBtcToUsd(btcRate);
 			data.setUpdated(LocalDateTime.now());
-			log.info("Bitfinex data successfully updated: " + data.toString());
 			return data;
 		} catch (Exception ex) {
 			log.error("Cannot update bitfinex info! " + ex.getMessage(), ex);

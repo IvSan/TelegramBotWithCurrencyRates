@@ -37,7 +37,7 @@ public class CurrencyDataHandler {
 		for (DataSource dataSource : dataSources) {
 			dataSource.updateData(actualData);
 		}
-		log.info("Rates update done.");
+		log.info("Rates update done: " + actualData.toString());
 		return actualData;
 	}
 
