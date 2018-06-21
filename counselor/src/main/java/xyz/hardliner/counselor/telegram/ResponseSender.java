@@ -10,6 +10,7 @@ import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import xyz.hardliner.counselor.domain.Interrogator;
+import xyz.hardliner.decider.Response;
 
 import java.util.ArrayList;
 import java.util.List;

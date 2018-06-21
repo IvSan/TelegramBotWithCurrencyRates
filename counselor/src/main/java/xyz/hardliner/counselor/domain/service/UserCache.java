@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.User;
+import xyz.hardliner.counselor.db.InterrogatorRepository;
 import xyz.hardliner.counselor.domain.Interrogator;
 
 import java.util.LinkedList;
@@ -14,6 +15,7 @@ import java.util.List;
 public class UserCache {
 
 	private final ServiceFacade services;
+	private final InterrogatorRepository repository;
 
 	private List<Interrogator> recentUsers = new LinkedList<>();
 
@@ -26,6 +28,7 @@ public class UserCache {
 		}
 		Interrogator interrogator = new Interrogator(user, message.getChatId(), MenuConstructor.construct(services));
 		recentUsers.add(interrogator);
+		repository.save(interrogator);
 		return interrogator;
 	}
 }

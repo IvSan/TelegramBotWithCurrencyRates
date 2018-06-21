@@ -1,15 +1,11 @@
 package xyz.hardliner.decider;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.function.Supplier;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class Direction {
 
 	private Node from;
@@ -24,4 +20,5 @@ public class Direction {
 		this.from = from;
 		this.to = to;
 	}
+
 }

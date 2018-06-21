@@ -1,4 +1,4 @@
-package xyz.hardliner.counselor.telegram;
+package xyz.hardliner.decider;
 
 import lombok.Data;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;

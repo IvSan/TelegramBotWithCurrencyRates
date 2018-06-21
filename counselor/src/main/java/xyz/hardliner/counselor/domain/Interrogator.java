@@ -3,8 +3,9 @@ package xyz.hardliner.counselor.domain;
 import lombok.Data;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
+import org.springframework.data.annotation.Transient;
 import org.telegram.telegrambots.api.objects.User;
-import xyz.hardliner.counselor.telegram.TelegramNavigator;
+import xyz.hardliner.decider.Navigator;
 
 @Data
 @Entity
@@ -16,14 +17,21 @@ public class Interrogator {
 	private String userName; // Optional. User‘s or bot’s username
 	private Long chatId;
 
-	private TelegramNavigator navigator;
+	private Long invocations;
+	@Transient
+	private Navigator navigator;
 
-	public Interrogator(User user, Long chatId, TelegramNavigator navigator) {
+	public Interrogator(User user, Long chatId, Navigator navigator) {
 		this.id = user.getId();
 		this.firstName = user.getFirstName();
 		this.lastName = user.getLastName();
 		this.userName = user.getUserName();
 		this.chatId = chatId;
+		this.invocations = 0L;
 		this.navigator = navigator;
+	}
+
+	public synchronized void countInvocation() {
+		this.invocations++;
 	}
 }

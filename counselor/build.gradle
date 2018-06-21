@@ -29,6 +29,7 @@ dependencies {
     compile project(':decider')
 
     compile('org.springframework.boot:spring-boot-starter')
+    compile("org.springframework.boot:spring-boot-starter-data-mongodb")
     compileOnly('org.projectlombok:lombok')
     testCompile('org.springframework.boot:spring-boot-starter-test')
 
