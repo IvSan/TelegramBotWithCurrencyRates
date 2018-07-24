@@ -22,6 +22,7 @@ public class StorageService {
 
 	private final InterrogatorRepository interrogatorRepository;
 	private final CurrencyDataRepository currencyDataRepository;
+	private final MessageRepository messageRepository;
 
 	private MenuConstructor menuConstructor;
 
@@ -46,13 +47,16 @@ public class StorageService {
 		interrogatorRepository.save(interrogator);
 	}
 
-	public void save(CurrencyData data) {
-		currencyDataRepository.save(data);
+	public void saveIncomingMessage(Interrogator interrogator, String text) {
+		messageRepository.save(new xyz.hardliner.counselor.domain.Message(true, text, interrogator));
 	}
 
-	public Float findBtcToUsdWeekAverage() {
-		List<CurrencyData> data = currencyDataRepository.findByUpdatedAfter(LocalDateTime.now().minusDays(7));
-		return (float) (data.stream().mapToDouble(CurrencyData::getBtcToUsd).average().orElse(0));
+	public void saveOutgoingMessage(Interrogator interrogator, String text) {
+		messageRepository.save(new xyz.hardliner.counselor.domain.Message(false, text, interrogator));
+	}
+
+	public void save(CurrencyData data) {
+		currencyDataRepository.save(data);
 	}
 
 	public List<CurrencyData> findAllForLastWeek() {

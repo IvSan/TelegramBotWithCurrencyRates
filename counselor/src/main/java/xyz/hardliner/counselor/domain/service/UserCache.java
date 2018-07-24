@@ -7,21 +7,32 @@ import org.telegram.telegrambots.api.objects.User;
 import xyz.hardliner.counselor.db.StorageService;
 import xyz.hardliner.counselor.domain.Interrogator;
 
+import javax.annotation.PostConstruct;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class UserCache {
 
 	private final StorageService storageService;
-
+	private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 	private List<Interrogator> recentUsers = new LinkedList<>();
+
+	@PostConstruct
+	private void init() {
+		executor.scheduleAtFixedRate(() -> recentUsers.clear(), 1, 1, TimeUnit.DAYS);
+	}
 
 	public Interrogator recognizeInterrogator(Message message) {
 		User user = message.getFrom();
 		for (Interrogator interrogator : recentUsers) {
 			if (interrogator.getId().equals(user.getId())) {
+				interrogator.countInvocation();
+				storageService.save(interrogator);
 				return interrogator;
 			}
 		}

@@ -7,6 +7,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.User;
+import xyz.hardliner.counselor.db.StorageService;
 import xyz.hardliner.counselor.domain.Interrogator;
 import xyz.hardliner.counselor.domain.service.UserCache;
 import xyz.hardliner.decider.Response;
@@ -22,6 +23,7 @@ import static xyz.hardliner.counselor.util.Utils.parseIdentities;
 public class ChatMaster {
 
 	private final UserCache userCache;
+	private final StorageService storageService;
 
 	public Pair<Interrogator, Response> handleUpdate(Update update) {
 		if (!isValid(update)) {
@@ -30,6 +32,9 @@ public class ChatMaster {
 		try {
 			Instant start = Instant.now();
 			Pair<Interrogator, Response> result = process(update);
+			for (String msg : result.getRight().getMessages()) {
+				storageService.saveOutgoingMessage(result.getLeft(), msg);
+			}
 			log.debug("Respond on update done in " + Duration.between(start, Instant.now()).toMillis() + "ms");
 			return result;
 		} catch (Exception ex) {
@@ -53,6 +58,7 @@ public class ChatMaster {
 				+ parseIdentities(update.getMessage().getFrom()));
 		Interrogator user = userCache.recognizeInterrogator(update.getMessage());
 		String str = update.getMessage().getText();
+		storageService.saveIncomingMessage(user, str);
 		return new ImmutablePair<>(user, user.getNavigator().moveTo(str));
 	}
 }
