@@ -2,7 +2,7 @@ package xyz.hardliner.counselor.datacollector.datasources;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import xyz.hardliner.counselor.datacollector.CurrencyData;
+import xyz.hardliner.counselor.db.CurrencyData;
 
 import java.net.URL;
 import java.time.LocalDateTime;

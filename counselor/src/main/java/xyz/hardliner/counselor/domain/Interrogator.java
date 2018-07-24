@@ -1,6 +1,8 @@
 package xyz.hardliner.counselor.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 import org.springframework.data.annotation.Transient;
@@ -9,6 +11,8 @@ import xyz.hardliner.decider.Navigator;
 
 @Data
 @Entity
+@NoArgsConstructor
+@EqualsAndHashCode
 public class Interrogator {
 	@Id
 	private Integer id; // Unique identifier for this user or bot

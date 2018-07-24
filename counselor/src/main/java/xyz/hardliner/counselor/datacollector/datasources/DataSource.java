@@ -1,6 +1,6 @@
 package xyz.hardliner.counselor.datacollector.datasources;
 
-import xyz.hardliner.counselor.datacollector.CurrencyData;
+import xyz.hardliner.counselor.db.CurrencyData;
 
 public interface DataSource {
 

@@ -1,48 +1,50 @@
 package xyz.hardliner.counselor.db;
 
-import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.User;
 import xyz.hardliner.counselor.domain.Interrogator;
 import xyz.hardliner.counselor.domain.service.MenuConstructor;
-import xyz.hardliner.counselor.domain.service.ServiceFacade;
 
+import java.util.Optional;
+
+@Getter
+@Setter
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class StorageService {
 
-	//	private final Datastore datastore;
-	private final ServiceFacade services;
-	private final InterrogatorRepository repository;
+	private final InterrogatorRepository interrogatorRepository;
+	private final CurrencyDataRepository currencyDataRepository;
 
-//	public StorageService(Environment environment, ServiceFacade services) {
-//		datastore = new Morphia().createDatastore(new MongoClient(), environment.getRequiredProperty("db.name"));
-//		datastore.ensureIndexes();
-//		this.services = services;
-//	}
+	private MenuConstructor menuConstructor;
 
 	public Interrogator parseUser(Message message) {
 		User user = message.getFrom();
-//		Interrogator interrogator = datastore.createQuery(Interrogator.class).field("id").equal(user.getId()).get();
-		Interrogator interrogator = repository.findById(user.getId()).get();
-		if (interrogator == null) {
-			interrogator = new Interrogator(user, message.getChatId(), MenuConstructor.construct(services));
-		}
+		Optional<Interrogator> optional = interrogatorRepository.findById(user.getId());
+		Interrogator interrogator = optional.orElseGet(() ->
+				new Interrogator(user, message.getChatId(), menuConstructor.construct()));
 		interrogator.setChatId(message.getChatId());
 		interrogator.setFirstName(user.getFirstName());
 		interrogator.setLastName(user.getLastName());
 		interrogator.setUserName(user.getUserName());
 		interrogator.countInvocation();
-		repository.save(interrogator);
+		if (interrogator.getNavigator() == null) {
+			interrogator.setNavigator(menuConstructor.construct());
+		}
+		interrogatorRepository.save(interrogator);
 		return interrogator;
 	}
 
 	public void save(Interrogator interrogator) {
-		repository.save(interrogator);
+		interrogatorRepository.save(interrogator);
 	}
 
-//	public List<Interrogator> findAllInterrogators() {
-//		return datastore.createQuery(Interrogator.class).asList();
-//	}
+	public void save(CurrencyData data) {
+		currencyDataRepository.save(data);
+	}
+
 }

@@ -1,8 +1,9 @@
-package xyz.hardliner.counselor.datacollector;
+package xyz.hardliner.counselor.db;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
 
 import java.math.RoundingMode;
 import java.text.NumberFormat;
@@ -11,8 +12,10 @@ import java.util.Locale;
 
 @Getter
 @Setter
-@ToString
+@Entity
 public class CurrencyData {
+	@Id
+	private long id;
 
 	Float usdToRub;
 	Float uerToRub;
@@ -44,3 +47,4 @@ public class CurrencyData {
 		return formatter.format(floatValue);
 	}
 }
+
