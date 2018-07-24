@@ -6,9 +6,12 @@ import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.User;
+import xyz.hardliner.counselor.domain.CurrencyData;
 import xyz.hardliner.counselor.domain.Interrogator;
 import xyz.hardliner.counselor.domain.service.MenuConstructor;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Getter
@@ -47,4 +50,12 @@ public class StorageService {
 		currencyDataRepository.save(data);
 	}
 
+	public Float findBtcToUsdWeekAverage() {
+		List<CurrencyData> data = currencyDataRepository.findByUpdatedAfter(LocalDateTime.now().minusDays(7));
+		return (float) (data.stream().mapToDouble(CurrencyData::getBtcToUsd).average().orElse(0));
+	}
+
+	public List<CurrencyData> findAllForLastWeek() {
+		return currencyDataRepository.findByUpdatedAfter(LocalDateTime.now().minusDays(7));
+	}
 }

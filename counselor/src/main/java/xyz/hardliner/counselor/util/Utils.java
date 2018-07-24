@@ -2,6 +2,10 @@ package xyz.hardliner.counselor.util;
 
 import org.telegram.telegrambots.api.objects.User;
 
+import java.math.RoundingMode;
+import java.text.NumberFormat;
+import java.util.Locale;
+
 public class Utils {
 
 	public static String parseIdentities(User user) {
@@ -23,5 +27,13 @@ public class Utils {
 		} else {
 			return result.trim();
 		}
+	}
+
+	public static String twoDigitsFormat(Float floatValue) {
+		NumberFormat formatter = NumberFormat.getInstance(Locale.US);
+		formatter.setMaximumFractionDigits(2);
+		formatter.setMinimumFractionDigits(2);
+		formatter.setRoundingMode(RoundingMode.HALF_UP);
+		return formatter.format(floatValue);
 	}
 }

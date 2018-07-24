@@ -2,7 +2,7 @@ package xyz.hardliner.counselor.datacollector.datasources;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import xyz.hardliner.counselor.db.CurrencyData;
+import xyz.hardliner.counselor.domain.CurrencyData;
 
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -18,7 +18,7 @@ public class ExchangeRates implements DataSource {
 		try {
 			ExchangeRatesApiUnit unit = mapper.readValue(new URL(URL), ExchangeRatesApiUnit.class);
 			data.setUsdToRub(unit.getRates().get("RUB"));
-			data.setUerToRub(data.getUsdToRub() / unit.getRates().get("EUR"));
+			data.setEurToRub(data.getUsdToRub() / unit.getRates().get("EUR"));
 			data.setUpdated(LocalDateTime.now());
 			return data;
 		} catch (Exception ex) {
