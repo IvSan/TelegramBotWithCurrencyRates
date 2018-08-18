@@ -6,11 +6,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.api.methods.BotApiMethod;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
-import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
+import xyz.hardliner.counselor.decider.Response;
 import xyz.hardliner.counselor.domain.Interrogator;
-import xyz.hardliner.decider.Response;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,16 @@ public class ResponseSender {
 		}
 	}
 
-	public void sendText(Interrogator interrogator, List<String> strings, ReplyKeyboardMarkup keyboard) {
+	public void sendText(Interrogator interrogator, List<String> strings) {
+		List<BotApiMethod> messages = new ArrayList<>();
+		for (String string : strings) {
+			SendMessage message = (new SendMessage()).setText(string).setChatId(interrogator.getChatId());
+			messages.add(message);
+		}
+		this.executeCommands(messages);
+	}
+
+	public void sendText(Interrogator interrogator, List<String> strings, ReplyKeyboard keyboard) {
 		List<BotApiMethod> messages = new ArrayList<>();
 		for (String string : strings) {
 			SendMessage message = (new SendMessage()).setText(string).setChatId(interrogator.getChatId());

@@ -4,3 +4,4 @@ target/
 *.iml
 .directory
 build/
+.out

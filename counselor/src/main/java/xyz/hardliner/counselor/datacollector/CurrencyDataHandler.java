@@ -9,6 +9,9 @@ import xyz.hardliner.counselor.datacollector.datasources.DataSource;
 import xyz.hardliner.counselor.datacollector.datasources.ExchangeRates;
 import xyz.hardliner.counselor.db.StorageService;
 import xyz.hardliner.counselor.domain.CurrencyData;
+import xyz.hardliner.counselor.domain.Interrogator;
+import xyz.hardliner.counselor.domain.service.AlertsService;
+import xyz.hardliner.counselor.telegram.ResponseSender;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -17,6 +20,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static xyz.hardliner.counselor.util.Utils.twoDigitsFormat;
+
 @Slf4j
 @Getter
 @Service
@@ -24,15 +29,20 @@ public class CurrencyDataHandler {
 
 	private final StorageService storageService;
 	private final CurrencyDataStatistics statistics;
+	private final AlertsService alertsService;
+	private final ResponseSender responseSender;
 
 	private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 	private final List<DataSource> dataSources;
 	private CurrencyData actualData;
 
 	@Autowired
-	public CurrencyDataHandler(StorageService storageService, CurrencyDataStatistics statistics) {
+	public CurrencyDataHandler(StorageService storageService, CurrencyDataStatistics statistics,
+	                           AlertsService alertsService, ResponseSender responseSender) {
 		this.storageService = storageService;
 		this.statistics = statistics;
+		this.alertsService = alertsService;
+		this.responseSender = responseSender;
 		this.dataSources = new ArrayList<>();
 		dataSources.add(new ExchangeRates());
 		dataSources.add(new Bitfinex());
@@ -53,11 +63,26 @@ public class CurrencyDataHandler {
 		actualData.setBtcToRubStatistics(statistics.getBtcToRubWeekReport(
 				actualData.getBtcToUsd() * actualData.getUsdToRub()));
 		storageService.save(actualData);
+		alertsService.checkAlerts(actualData.getBtcToUsd());
 		return actualData;
+	}
+
+	public void reportData(Interrogator interrogator, String command) {
+		List<String> reports = new ArrayList<>();
+		reports.add(getData());
+		if (interrogator.getSettings().getBtcAmount() != 0f) {
+			reports.add(getCustomData(interrogator.getSettings().getBtcAmount()));
+		}
+		responseSender.sendText(interrogator, reports);
 	}
 
 	public String getData() {
 		return actualData.compileString();
 	}
 
+	public String getCustomData(Float btcAmount) {
+		return btcAmount + " BTC = " + twoDigitsFormat(actualData.getBtcToUsd() * btcAmount) + " USD\n" +
+				btcAmount + " BTC = "
+				+ twoDigitsFormat(actualData.getBtcToUsd() * actualData.getUsdToRub() * btcAmount) + " RUB\n";
+	}
 }

@@ -5,9 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
-import org.springframework.data.annotation.Transient;
 import org.telegram.telegrambots.api.objects.User;
-import xyz.hardliner.decider.Navigator;
 
 @Data
 @Entity
@@ -22,17 +20,18 @@ public class Interrogator {
 	private Long chatId;
 
 	private Long invocations;
-	@Transient
-	private Navigator navigator;
+	private Settings settings;
+	private Integer position;
 
-	public Interrogator(User user, Long chatId, Navigator navigator) {
+	public Interrogator(User user, Long chatId) {
 		this.id = user.getId();
 		this.firstName = user.getFirstName();
 		this.lastName = user.getLastName();
 		this.userName = user.getUserName();
 		this.chatId = chatId;
 		this.invocations = 0L;
-		this.navigator = navigator;
+		this.settings = new Settings();
+		this.position = 1;
 	}
 
 	public synchronized void countInvocation() {

@@ -26,8 +26,6 @@ repositories {
 }
 
 dependencies {
-    compile project(':decider')
-
     compile('org.springframework.boot:spring-boot-starter')
     compile("org.springframework.boot:spring-boot-starter-data-mongodb")
     compileOnly('org.projectlombok:lombok')
@@ -36,4 +34,5 @@ dependencies {
     compile group: 'org.telegram', name: 'telegrambots', version: '3.6.1'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
     compile group: 'org.mongodb.morphia', name: 'morphia', version: '1.3.2'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
 }

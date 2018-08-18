@@ -29,21 +29,31 @@ public class StorageService {
 	public Interrogator parseUser(Message message) {
 		User user = message.getFrom();
 		Optional<Interrogator> optional = interrogatorRepository.findById(user.getId());
-		Interrogator interrogator = optional.orElseGet(() ->
-				new Interrogator(user, message.getChatId(), menuConstructor.construct()));
+		Interrogator interrogator = optional.orElseGet(() -> new Interrogator(user, message.getChatId()));
 		interrogator.setChatId(message.getChatId());
 		interrogator.setFirstName(user.getFirstName());
 		interrogator.setLastName(user.getLastName());
 		interrogator.setUserName(user.getUserName());
 		interrogator.countInvocation();
-		if (interrogator.getNavigator() == null) {
-			interrogator.setNavigator(menuConstructor.construct());
+		if (interrogator.getPosition() == null) {
+			interrogator.setPosition(1);
 		}
 		interrogatorRepository.save(interrogator);
 		return interrogator;
 	}
 
-	public void save(Interrogator interrogator) {
+	public void setBounds(Interrogator interrogator, String values) {
+		String[] strings = values.split(" ");
+		Float low = Float.parseFloat(strings[0]);
+		Float high = Float.parseFloat(strings[1]);
+		interrogator.getSettings().setLowerAlertBound(low);
+		interrogator.getSettings().setUpperAlertBound(high);
+		interrogatorRepository.save(interrogator);
+	}
+
+	public void setAmount(Interrogator interrogator, String value) {
+		Float amount = Float.parseFloat(value.replace(',', '.'));
+		interrogator.getSettings().setBtcAmount(amount);
 		interrogatorRepository.save(interrogator);
 	}
 
