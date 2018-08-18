@@ -25,11 +25,11 @@ public class NavigatorService {
 		navigator = menuConstructor.construct();
 	}
 
-	public Response moveTo(Interrogator user, String command) {
-		navigator.setCurrent(navigator.getNodes().get(user.getPosition()));
-		Pair<List<String>, Node> result = navigator.moveTo(user, command);
-		user.setPosition(result.getRight().getId());
-		interrogatorRepository.save(user);
+	public Response moveTo(Interrogator interrogator, String command) {
+		navigator.setCurrent(navigator.getNodes().get(interrogator.getPosition()));
+		Pair<List<String>, Node> result = navigator.moveTo(interrogator, command);
+		interrogator.setPosition(result.getRight().getId());
+		interrogatorRepository.save(interrogator);
 		return new Response(result.getLeft(), result.getRight().getKeyboard().get());
 	}
 }

@@ -3,17 +3,21 @@ package xyz.hardliner.counselor.db;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.User;
 import xyz.hardliner.counselor.domain.CurrencyData;
 import xyz.hardliner.counselor.domain.Interrogator;
+import xyz.hardliner.counselor.domain.Settings;
 import xyz.hardliner.counselor.domain.service.MenuConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Getter
 @Setter
 @Service
@@ -38,23 +42,38 @@ public class StorageService {
 		if (interrogator.getPosition() == null) {
 			interrogator.setPosition(1);
 		}
+		if (interrogator.getSettings() == null) {
+			interrogator.setSettings(new Settings());
+		}
 		interrogatorRepository.save(interrogator);
 		return interrogator;
 	}
 
-	public void setBounds(Interrogator interrogator, String values) {
-		String[] strings = values.split(" ");
-		Float low = Float.parseFloat(strings[0]);
-		Float high = Float.parseFloat(strings[1]);
-		interrogator.getSettings().setLowerAlertBound(low);
-		interrogator.getSettings().setUpperAlertBound(high);
-		interrogatorRepository.save(interrogator);
+	public List<String> setBounds(Interrogator interrogator, String values) {
+		try {
+			String[] strings = values.split(" ");
+			Float low = Float.parseFloat(strings[0]);
+			Float high = Float.parseFloat(strings[1]);
+			interrogator.getSettings().setLowerAlertBound(low);
+			interrogator.getSettings().setUpperAlertBound(high);
+			interrogatorRepository.save(interrogator);
+			return Collections.singletonList("Alerts saved");
+		} catch (Exception ex) {
+			log.error("Cannot parse alert bounds" + ex);
+			return Collections.singletonList("Sorry, wrong values");
+		}
 	}
 
-	public void setAmount(Interrogator interrogator, String value) {
-		Float amount = Float.parseFloat(value.replace(',', '.'));
-		interrogator.getSettings().setBtcAmount(amount);
-		interrogatorRepository.save(interrogator);
+	public List<String> setAmount(Interrogator interrogator, String value) {
+		try {
+			Float amount = Float.parseFloat(value.replace(',', '.'));
+			interrogator.getSettings().setBtcAmount(amount);
+			interrogatorRepository.save(interrogator);
+			return Collections.singletonList("Custom converter saved");
+		} catch (Exception ex) {
+			log.error("Cannot parse btc amount" + ex);
+			return Collections.singletonList("Sorry, wrong value");
+		}
 	}
 
 	public void saveIncomingMessage(Interrogator interrogator, String text) {

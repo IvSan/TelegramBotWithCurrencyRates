@@ -4,7 +4,8 @@ import lombok.Data;
 import org.apache.commons.lang3.tuple.Pair;
 import xyz.hardliner.counselor.domain.Interrogator;
 
-import java.util.function.Consumer;
+import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Data
@@ -18,8 +19,7 @@ public class Direction {
 	private Supplier<String> incomingLegend;
 	private Supplier<String> automaticCommand;
 
-	private Consumer<Pair<Interrogator, String>> action = s -> {
-	};
+	private Function<Pair<Interrogator, String>, List<String>> action = a -> null;
 
 	public Direction(Node from, Node to) {
 		this.from = from;

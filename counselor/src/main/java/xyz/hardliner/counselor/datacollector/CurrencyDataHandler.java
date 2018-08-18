@@ -11,7 +11,6 @@ import xyz.hardliner.counselor.db.StorageService;
 import xyz.hardliner.counselor.domain.CurrencyData;
 import xyz.hardliner.counselor.domain.Interrogator;
 import xyz.hardliner.counselor.domain.service.AlertsService;
-import xyz.hardliner.counselor.telegram.ResponseSender;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -30,7 +29,6 @@ public class CurrencyDataHandler {
 	private final StorageService storageService;
 	private final CurrencyDataStatistics statistics;
 	private final AlertsService alertsService;
-	private final ResponseSender responseSender;
 
 	private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 	private final List<DataSource> dataSources;
@@ -38,11 +36,10 @@ public class CurrencyDataHandler {
 
 	@Autowired
 	public CurrencyDataHandler(StorageService storageService, CurrencyDataStatistics statistics,
-	                           AlertsService alertsService, ResponseSender responseSender) {
+	                           AlertsService alertsService) {
 		this.storageService = storageService;
 		this.statistics = statistics;
 		this.alertsService = alertsService;
-		this.responseSender = responseSender;
 		this.dataSources = new ArrayList<>();
 		dataSources.add(new ExchangeRates());
 		dataSources.add(new Bitfinex());
@@ -67,13 +64,13 @@ public class CurrencyDataHandler {
 		return actualData;
 	}
 
-	public void reportData(Interrogator interrogator, String command) {
+	public List<String> reportData(Interrogator interrogator, String command) {
 		List<String> reports = new ArrayList<>();
 		reports.add(getData());
 		if (interrogator.getSettings().getBtcAmount() != 0f) {
 			reports.add(getCustomData(interrogator.getSettings().getBtcAmount()));
 		}
-		responseSender.sendText(interrogator, reports);
+		return reports;
 	}
 
 	public String getData() {

@@ -73,7 +73,6 @@ public class MenuConstructor {
 
 		Direction moveToMainFromAlerts = new Direction(alerts, main);
 		moveToMainFromAlerts.setCommandAndLegendToGo(new ImmutablePair<>("\\d*\\s\\d*", null));
-		moveToMainFromAlerts.setIncomingLegend(() -> "Alerts saved");
 		moveToMainFromAlerts.setAction(pair -> storageService.setBounds(pair.getLeft(), pair.getRight()));
 		alerts.addDirection(moveToMainFromAlerts);
 
@@ -86,7 +85,6 @@ public class MenuConstructor {
 
 		Direction moveToMainFromConverter = new Direction(converter, main);
 		moveToMainFromConverter.setCommandAndLegendToGo(new ImmutablePair<>("\\d*\\.?,?\\d*", null));
-		moveToMainFromConverter.setIncomingLegend(() -> "Custom converter saved");
 		moveToMainFromConverter.setAction(pair -> storageService.setAmount(pair.getLeft(), pair.getRight()));
 		converter.addDirection(moveToMainFromConverter);
 

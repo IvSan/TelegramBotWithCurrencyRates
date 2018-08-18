@@ -44,11 +44,11 @@ public class Navigator {
 		for (Direction direction : current.getDirections()) {
 			if (command.toLowerCase().matches(direction.getCommandAndLegendToGo().getLeft())) {
 				List<String> messages = new ArrayList<>();
-				nullsafeAdd(messages, direction.getLeavingLegend());
+				nullSafeAdd(messages, direction.getLeavingLegend());
 				current = direction.getTo();
-				nullsafeAdd(messages, direction.getIncomingLegend());
+				nullSafeAdd(messages, direction.getIncomingLegend());
 
-				direction.getAction().accept(new ImmutablePair<>(user, command));
+				nullSafeAdd(messages, direction.getAction().apply(new ImmutablePair<>(user, command)));
 
 				if (direction.getAutomaticCommand() != null) {
 					messages.addAll(moveTo(user, direction.getAutomaticCommand().get(), false).getLeft());
@@ -56,7 +56,7 @@ public class Navigator {
 
 				if (addLegendsToGo) {
 					for (String legend : getLegendsToGo()) {
-						nullsafeAdd(messages, () -> legend);
+						nullSafeAdd(messages, () -> legend);
 					}
 				}
 
@@ -74,12 +74,18 @@ public class Navigator {
 				.filter(Objects::nonNull).collect(Collectors.toList());
 	}
 
-	public void nullsafeAdd(List<String> list, Supplier<String> supplier) {
+	private void nullSafeAdd(List<String> list, Supplier<String> supplier) {
 		if (supplier != null) {
 			String string = supplier.get();
 			if (string != null) {
 				list.add(string);
 			}
+		}
+	}
+
+	private void nullSafeAdd(List<String> list, List<String> added) {
+		if (list != null && added != null) {
+			list.addAll(added);
 		}
 	}
 }
