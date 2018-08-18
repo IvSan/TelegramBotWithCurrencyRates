@@ -22,6 +22,11 @@ public class AlertsService {
 		List<Interrogator> interrogators = interrogatorRepository.findAll();
 		for (Interrogator interrogator : interrogators) {
 			Settings settings = interrogator.getSettings();
+
+			if (settings == null) {
+				continue;
+			}
+
 			if (settings.getLowerAlertBound() > Float.MIN_VALUE && settings.getUpperAlertBound() < Float.MAX_VALUE) {
 				if (btcToUsdRate < settings.getLowerAlertBound()) {
 					fireLowAlert(interrogator, btcToUsdRate);
