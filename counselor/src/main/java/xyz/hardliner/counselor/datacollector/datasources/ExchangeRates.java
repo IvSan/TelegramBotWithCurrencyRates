@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Slf4j
 public class ExchangeRates implements DataSource {
 
-	private static final String URL = "https://exchangeratesapi.io/api/latest?base=USD&symbols=RUB,EUR";
+	private static final String URL = "https://api.exchangeratesapi.io/latest?base=USD&symbols=RUB,EUR";
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Override

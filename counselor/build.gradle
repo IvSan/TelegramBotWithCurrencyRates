@@ -28,7 +28,8 @@ repositories {
 dependencies {
     compile('org.springframework.boot:spring-boot-starter')
     compile("org.springframework.boot:spring-boot-starter-data-mongodb")
-    compileOnly('org.projectlombok:lombok')
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
     testCompile('org.springframework.boot:spring-boot-starter-test')
 
     compile group: 'org.telegram', name: 'telegrambots', version: '3.6.1'
